@@ -11,12 +11,14 @@
 #include "client.h"
 #include "queue.h"
 #include "shared.h"
-
+pthread_t dispatcher;
 
 // Thread que implementa o fluxo do cliente no parque.
 void *enjoy(void *arg){
-
-    //Sua lógica aqui
+    client_t *cliente = (client_t *) arg;
+    queue_enter(cliente);   //Entra na fila e posteriormente compra moedas
+    debug("[ENTER] - O turista entrou no parque.\n");
+    // Logica da escolha de brinquedos
 
 
     debug("[EXIT] - O turista saiu do parque.\n");
@@ -26,20 +28,25 @@ void *enjoy(void *arg){
 // Funcao onde o cliente compra as moedas para usar os brinquedos
 void buy_coins(client_t *self){
     // Sua lógica aqui
+    self->coins = rand() % MAX_COINS;
 }
 
 // Função onde o cliente espera a liberacao da bilheteria para adentrar ao parque.
 void wait_ticket(client_t *self){
     // Sua lógica aqui
+    // Logica da fila
 }
 
 // Funcao onde o cliente entra na fila da bilheteria
 void queue_enter(client_t *self){
     // Sua lógica aqui.
     debug("[WAITING] - Turista [%d] entrou na fila do portao principal\n", self->id);
+    // Logica da fila
+    wait_ticket(self);
+    // Logica da fila
 
     // Sua lógica aqui.
-    buy_coins(self);
+    buy_coins(self);    // Cede um valor aleatório de moedas ao cliente.
 
     // Sua lógica aqui.
     debug("[CASH] - Turista [%d] comprou [%d] moedas.\n", self->id, self->coins);
@@ -47,7 +54,14 @@ void queue_enter(client_t *self){
 
 // Essa função recebe como argumento informações sobre o cliente e deve iniciar os clientes.
 void open_gate(client_args *args){
-    // Sua lógica aqui
+    client_t *ar_clients = (client_t *) malloc(args->n * sizeof(client_t));
+    int num_clients = args->n;
+    for (int i = 0; i < num_clients; i++) {
+        pthread_t thread_client;
+        pthread_create(&thread_client, NULL, enjoy, (void *) &ar_clients[i]);
+    }
+
+
 }
 
 // Essa função deve finalizar os clientes
