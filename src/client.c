@@ -67,6 +67,7 @@ void open_gate(client_args *args){
     int num_clients = args->n;
     for (int i = 0; i < num_clients; i++) {
         pthread_t thread_client;
+        ar_clients[i] = *args->clients[i];
         pthread_create(&thread_client, NULL, enjoy, (void *) &ar_clients[i]);
     }
 }
