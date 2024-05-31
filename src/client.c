@@ -18,8 +18,15 @@ void *enjoy(void *arg){
     client_t *cliente = (client_t *) arg;
     queue_enter(cliente);   //Entra na fila e posteriormente compra moedas
     debug("[ENTER] - O turista entrou no parque.\n");
-    // Logica da escolha de brinquedos
-
+    while (TRUE){
+        if (cliente->coins == 0){
+            break;
+        }
+        cliente->coins -= 1;
+        int escolha_toy = rand() % cliente->number_toys;
+        
+        // Logica da escolha de brinquedos
+    }
 
     debug("[EXIT] - O turista saiu do parque.\n");
     pthread_exit(NULL);
@@ -59,6 +66,7 @@ void open_gate(client_args *args){
     for (int i = 0; i < num_clients; i++) {
         pthread_t thread_client;
         pthread_create(&thread_client, NULL, enjoy, (void *) &ar_clients[i]);
+
     }
 
 
@@ -67,4 +75,7 @@ void open_gate(client_args *args){
 // Essa função deve finalizar os clientes
 void close_gate(){
    //Sua lógica aqui
+    pthread_join(dispatcher, NULL);
+    free(gate_queue);
+    pthread_exit(NULL);
 }
