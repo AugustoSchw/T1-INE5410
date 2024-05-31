@@ -12,7 +12,11 @@
 #include "queue.h"
 #include "shared.h"
 pthread_t dispatcher;
+client_t *ar_clients;
+
+
 void queue_enter(client_t *self);
+
 // Thread que implementa o fluxo do cliente no parque.
 void *enjoy(void *arg){
     client_t *cliente = (client_t *) arg;
@@ -24,8 +28,8 @@ void *enjoy(void *arg){
             break;
         }
         cliente->coins -= 1;
-        //int escolha_toy = rand() % cliente->number_toys;
-        //cliente->toys[escolha_toy]->capacity -= 1;
+        int escolha_toy = rand() % cliente->number_toys;
+        cliente->toys[escolha_toy]->capacity += 1;
 
         // Logica da escolha de brinquedos
     }
@@ -63,8 +67,8 @@ void queue_enter(client_t *self){
 
 // Essa função recebe como argumento informações sobre o cliente e deve iniciar os clientes.
 void open_gate(client_args *args){
-    client_t *ar_clients = (client_t *) malloc(args->n * sizeof(client_t));
     int num_clients = args->n;
+    ar_clients = (client_t *) malloc(args->n * sizeof(client_t));
     for (int i = 0; i < num_clients; i++) {
         pthread_t thread_client;
         ar_clients[i] = *args->clients[i];
@@ -77,6 +81,7 @@ void close_gate(){
    //Sua lógica aqui
     sleep(1);
     pthread_join(dispatcher, NULL);
+    free(ar_clients);
     free(gate_queue);
     pthread_exit(NULL);
     
