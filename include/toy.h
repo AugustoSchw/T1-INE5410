@@ -14,5 +14,5 @@
  *******************************/
 void open_toys(toy_args *args);
 void close_toys();
-
+void fila_de_espera(client_t *self);
 #endif

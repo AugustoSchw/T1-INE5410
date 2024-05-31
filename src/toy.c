@@ -23,6 +23,10 @@ void *turn_on(void *args){
     pthread_exit(NULL);
 }
 
+void fila_de_espera(client_t *self){
+    // Sua lógica aqui
+}
+
 
 // Essa função recebe como argumento informações e deve iniciar os brinquedos.
 void open_toys(toy_args *args){

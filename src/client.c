@@ -6,25 +6,27 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <unistd.h>
 #include "defs.h"
 #include "client.h"
 #include "queue.h"
 #include "shared.h"
 pthread_t dispatcher;
-
+void queue_enter(client_t *self);
 // Thread que implementa o fluxo do cliente no parque.
 void *enjoy(void *arg){
     client_t *cliente = (client_t *) arg;
-    queue_enter(cliente);   //Entra na fila e posteriormente compra moedas
+
+    queue_enter(cliente);
     debug("[ENTER] - O turista entrou no parque.\n");
     while (TRUE){
         if (cliente->coins == 0){
             break;
         }
         cliente->coins -= 1;
-        int escolha_toy = rand() % cliente->number_toys;
-        
+        //int escolha_toy = rand() % cliente->number_toys;
+        //cliente->toys[escolha_toy]->capacity -= 1;
+
         // Logica da escolha de brinquedos
     }
 
@@ -66,16 +68,18 @@ void open_gate(client_args *args){
     for (int i = 0; i < num_clients; i++) {
         pthread_t thread_client;
         pthread_create(&thread_client, NULL, enjoy, (void *) &ar_clients[i]);
-
     }
-
-
 }
 
 // Essa função deve finalizar os clientes
 void close_gate(){
    //Sua lógica aqui
+    sleep(1);
     pthread_join(dispatcher, NULL);
     free(gate_queue);
     pthread_exit(NULL);
+    
+    // Sua lógica aqui
+    
+
 }
