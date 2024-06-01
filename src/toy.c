@@ -10,29 +10,48 @@
     #include <unistd.h>
     #include "toy.h"
     #include "shared.h"
-    pthread_mutex_t toy_mutex; // Mutex utilizado para cada brinquedo 
+    pthread_mutex_t toy_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex utilizado para cada brinquedo 
     toy_t *arr_toys;   // Array de briquedos
-
+    
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
+    
     void *turn_on(void *args) {
-        toy_t *toy = (toy_t *)args;
-        pthread_mutex_init(&toy_mutex, NULL); 
-
+        toy_t *toy = (toy_t *)args; 
+        int em_uso;
         debug("[ON] - O brinquedo [%d] foi ligado.\n", toy->id);
         
-        while (TRUE) { 
-            pthread_mutex_lock(&toy_mutex); // Mutex para cada brinquedo que for acessar
+        pthread_mutex_lock(&toy_mutex); // Mutex para cada brinquedo que for acessar. REVER USO DO MUTEX
 
-            // Implementar lógica do brinquedo (que é uma thread que vai executar essa função) aqui
-            debug("[RUNNING] - O brinquedo [%d] está em funcionamento.\n", toy->id);
-            
-            // Se cliente quiser brincar aqui, deve esperar, pois já está em funcionamento
-            debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
-
-            toy->capacity = 0; // Resetar capacidade para próxima vez que for brincar
-            pthread_mutex_unlock(&toy_mutex); // Libero o mutex para o brinquedo que foi acessado
+        while (toy->capacity == 0) { // Enquanto não houver clientes no brinquedo, ele ficará aguardando
+            em_uso = 0;
         }
 
+        if (toy->capacity == MAX_CAPACITY_TOY) { // Se encheu o brinquedo, inicio ele
+            em_uso = 1;
+        } else if (toy->capacity < MAX_CAPACITY_TOY) { // Se não encheu, mas já tenho clientes, espero e inicializo
+            sleep(2);
+            em_uso = 1;
+        }
+
+        while (toy->capacity > MAX_CAPACITY_TOY) {
+            em_uso = 0;                     // Não posso iniciar o brinquedo com mais clientes do que ele suporta
+            toy->capacity--;
+        }
+
+        em_uso = 1; // Ao chegar aqui, toy->capacity é menor ou igual a MAX_CAPACITY_TOY
+        if (em_uso == 1){
+        debug("[RUNNING] - O brinquedo [%d] está em funcionamento.\n", toy->id);
+        
+        sleep(3); // Duração do brinquedo
+        }
+        em_uso = 0;
+        toy->capacity = 0; // Resetar capacidade para próxima vez que for brincar
+        
+        debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
+
+        pthread_mutex_unlock(&toy_mutex); // Libero o mutex para o brinquedo que foi acessado
+    
+        
         debug("[OFF] - O brinquedo [%d] foi desligado.\n", toy->id);
         pthread_exit(NULL);
     }
@@ -46,7 +65,7 @@
             pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *) &arr_toys[i]);
         }
         for (int i = 0; i < args->n; i++) {  // Sincronização dos brinquedos
-            pthread_join(&args->toys[i]->thread, NULL);
+            pthread_join(args->toys[i]->thread, NULL);
         }
     }
 
