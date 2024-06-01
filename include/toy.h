@@ -12,7 +12,8 @@
  *   NÃO EDITAR ESSAS FUNÇÕES   *
  *          ATENÇÃO             *
  *******************************/
+
 void open_toys(toy_args *args);
 void close_toys();
-void fila_de_espera(client_t *self);
+void *turn_on(void *args);
 #endif

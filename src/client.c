@@ -12,11 +12,10 @@
 #include "queue.h"
 #include "shared.h"
 pthread_t dispatcher;
-client_t *ar_clients;   // Array de clientes
-
+pthread_t *thread_client;
 
 void queue_enter(client_t *self);  // Funcao onde o cliente entra na fila da bilheteria 
-
+void wait_ticket(client_t *self);  // Funcao onde o cliente espera a liberacao da bilheteria para adentrar ao parque
 // Thread que implementa o fluxo do cliente no parque.
 void *enjoy(void *arg){
     client_t *cliente = (client_t *) arg;   // Cliente
@@ -30,7 +29,7 @@ void *enjoy(void *arg){
         cliente->coins -= 1;   // Decrementa a quantidade de moedas do cliente por brinquedo usado
         int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
         cliente->toys[escolha_toy]->capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
-
+        sleep(1);   // Tempo de uso do brinquedo
         // Logica da escolha de brinquedos
     }
 
@@ -40,12 +39,14 @@ void *enjoy(void *arg){
 
 // Funcao onde o cliente compra as moedas para usar os brinquedos
 void buy_coins(client_t *self){
-    // Sua lógica aqui
+    wait_ticket(self);  // Espera a liberacao da bilheteria
     self->coins = rand() % MAX_COINS; // Cede um valor aleatório de moedas ao cliente
 }
 
 // Função onde o cliente espera a liberacao da bilheteria para adentrar ao parque.
 void wait_ticket(client_t *self){
+    enqueue(gate_queue, self->id);   // Adiciona o cliente na fila da bilheteria
+    
     // Sua lógica aqui
     // Logica da fila
 }
@@ -58,10 +59,11 @@ void queue_enter(client_t *self){
     wait_ticket(self);
     // Logica da fila
     //enqueue(gate_queue, self);    <------ ERRO
-
+    buy_coins(self);
     // Sua lógica aqui.
     
     // Sua lógica aqui.
+    sleep(2);
     debug("[CASH] - Turista [%d] comprou [%d] moedas.\n", self->id, self->coins);
 }
 
@@ -69,17 +71,21 @@ void queue_enter(client_t *self){
 void open_gate(client_args *args){
     int num_clients = args->n; // Numero de clientes
     ar_clients = (client_t *) malloc(args->n * sizeof(client_t)); // Array de clientes
+    thread_client = (pthread_t *) malloc(args->n * sizeof(pthread_t)); // Array de threads de clientes
     for (int i = 0; i < num_clients; i++) { // Inicializa os clientes
-        pthread_t thread_client; // Thread do cliente
         ar_clients[i] = *args->clients[i]; // adiciona as informações do cliente na array de clientes
-        pthread_create(&thread_client, NULL, enjoy, (void *) &ar_clients[i]); // Cria a thread do cliente
+        pthread_create(&thread_client[i], NULL, enjoy, (void *) &ar_clients[i]); // Cria a thread do cliente
     }
 }
 
 // Essa função deve finalizar os clientes
 void close_gate(){
    //Sua lógica aqui
-    sleep(1); 
+    sleep(1);
+    size_t num_clients = sizeof(ar_clients) / sizeof(client_t*);
+    for (size_t i = 0; i < num_clients; i++){
+        pthread_join(thread_client[i], NULL);
+    }
     //pthread_join(dispatcher, NULL); 
     free(ar_clients);   // Desaloca a memoria dos clientes
     free(gate_queue);   // Desaloca a memoria da fila

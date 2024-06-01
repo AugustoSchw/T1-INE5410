@@ -13,5 +13,5 @@
  *          ATENÇÃO               *
  *********************************/
 extern Queue *gate_queue;
-
+extern client_t *ar_clients;
 #endif

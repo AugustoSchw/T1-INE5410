@@ -14,5 +14,6 @@
  *******************************/
 void open_gate(client_args *args);
 void close_gate();
+void buy_coins(client_t *self);
 
 #endif
