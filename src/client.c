@@ -57,10 +57,10 @@ void queue_enter(client_t *self){
     // Logica da fila
     wait_ticket(self);
     // Logica da fila
+    //enqueue(gate_queue, self);    <------ ERRO
 
     // Sua lógica aqui.
-    buy_coins(self);    // Cede um valor aleatório de moedas ao cliente.
-
+    
     // Sua lógica aqui.
     debug("[CASH] - Turista [%d] comprou [%d] moedas.\n", self->id, self->coins);
 }
