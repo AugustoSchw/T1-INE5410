@@ -12,3 +12,15 @@
  *          ATENÇÃO               *
  *********************************/
 Queue *gate_queue = NULL;
+
+client_t **ar_clients; // Array de clientes
+
+int n_clients = 0; // Numero de clientes
+
+int sinalizador_close_gate; // Variavel para sinalizar o fechamento do portao
+
+int bilheteria_aberta = 0;
+
+pthread_mutex_t bilheteria_aberta_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para alteração da variavel bilheteria_aberta
+
+pthread_mutex_t sinalizador_close_gate_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para alteração da variavel sinalizador_close_gate

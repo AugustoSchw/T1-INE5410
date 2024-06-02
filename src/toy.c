@@ -16,15 +16,16 @@
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
     
     void *turn_on(void *args) {
+        sleep(5);
         toy_t *toy = (toy_t *)args; 
         int em_uso;
         debug("[ON] - O brinquedo [%d] foi ligado.\n", toy->id);
         
         pthread_mutex_lock(&toy_mutex); // Mutex para cada brinquedo que for acessar. REVER USO DO MUTEX
 
-        while (toy->capacity == 0) { // Enquanto não houver clientes no brinquedo, ele ficará aguardando
-            em_uso = 0;
-        }
+        //while (toy->capacity == 0) { // Enquanto não houver clientes no brinquedo, ele ficará aguardando
+         //   em_uso = 0;
+        //}
 
         if (toy->capacity == MAX_CAPACITY_TOY) { // Se encheu o brinquedo, inicio ele
             em_uso = 1;
@@ -56,22 +57,23 @@
         pthread_exit(NULL);
     }
 
+        
 
     // Essa função recebe como argumento informações e deve iniciar os brinquedos.
+    
     void open_toys(toy_args *args) {
         arr_toys = (toy_t *) malloc(args->n * sizeof(toy_t)); // Array de toys
         for (int i = 0; i < args->n; i++) {  // Criação de cada brinquedo
         arr_toys[i] = *args->toys[i]; // Insere os argumentos no array de toys
             pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *) &arr_toys[i]);
         }
-        for (int i = 0; i < args->n; i++) {  // Sincronização dos brinquedos
-            pthread_join(args->toys[i]->thread, NULL);
-        }
+
     }
 
     // Desligando os brinquedos
     void close_toys(){
         // Sua lógica aqui
+        sleep(5);
         pthread_exit(NULL);
         free(arr_toys);
     }
