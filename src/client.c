@@ -87,6 +87,7 @@ void close_gate(){
         pthread_join(thread_client[i], NULL);
     }
     //pthread_join(dispatcher, NULL); 
+    ar_clients = NULL;
     free(ar_clients);   // Desaloca a memoria dos clientes
     free(gate_queue);   // Desaloca a memoria da fila
     pthread_exit(NULL);

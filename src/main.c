@@ -133,6 +133,7 @@ int main(int argc, char *argv[]){
     close_tickets();
 
     // Desligam os brinquedos.
+    
     close_toys();
 
     // Desalocando funcionarios

@@ -12,4 +12,4 @@
  *          ATENÇÃO               *
  *********************************/
 Queue *gate_queue = NULL;
-client_t *ar_clients = NULL;
+client_t *ar_clients;
