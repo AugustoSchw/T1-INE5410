@@ -23,17 +23,22 @@ void *sell(void *args){
     debug("[INFO] - Bilheteria Abriu!\n");
     while (TRUE) {
         if (!sinalizador_close_gate) {
+            //pthread_mutex_lock(&ar_tickets[atendente->id - 1]->mutex_ticket);
+            pthread_mutex_lock(&gate_mutex);
             if (!is_queue_empty(gate_queue)) {
-            int cliente_fila = dequeue(gate_queue);
-            
-            debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, atendente->id);
-            buy_coins(ar_clients[cliente_fila]);
-            ar_clients[cliente_fila]->em_fila = 0;
+                int cliente_fila = dequeue(gate_queue);
+                pthread_mutex_unlock(&gate_mutex);
+                debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, atendente->id);
+                buy_coins(ar_clients[cliente_fila]);
+                ar_clients[cliente_fila]->em_fila = 0;
+                //pthread_mutex_unlock(&ar_tickets[atendente->id - 1]->mutex_ticket);
             } else {
+                pthread_mutex_unlock(&gate_mutex);
                 sleep(1);
                 continue;
             }
         } else {
+            pthread_mutex_unlock(&gate_mutex);
             break;
         }
         
@@ -41,7 +46,7 @@ void *sell(void *args){
         
         // pthread_mutex_unlock(&gate_mutex);
     }
-
+    
     pthread_exit(NULL);
 }
 
