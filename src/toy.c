@@ -16,7 +16,6 @@
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
     
     void *turn_on(void *args) {
-        sleep(5);
         toy_t *toy = (toy_t *)args; 
         int em_uso;
         debug("[ON] - O brinquedo [%d] foi ligado.\n", toy->id);

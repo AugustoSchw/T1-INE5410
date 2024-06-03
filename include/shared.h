@@ -16,7 +16,9 @@ extern Queue *gate_queue;
 extern int sinalizador_close_gate;
 extern client_t **ar_clients;
 extern int n_clients;
+extern int n_tickets;
 extern int bilheteria_aberta;
+extern ticket_t **ar_tickets;
 extern pthread_mutex_t bilheteria_aberta_mutex;
 extern pthread_mutex_t sinalizador_close_gate_mutex;
 
