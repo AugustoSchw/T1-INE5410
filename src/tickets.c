@@ -23,16 +23,19 @@ void *sell(void *args){
     debug("[INFO] - Bilheteria Abriu!\n");
     sleep(1);
     while (TRUE) {
-        int cliente_fila = dequeue(gate_queue);
-        debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, ticket->id);
-        buy_coins(ar_clients[cliente_fila]);
-        ar_clients[cliente_fila]->em_fila = 0;
+        if (!is_queue_empty(gate_queue)) {
+            int cliente_fila = dequeue(gate_queue);
+            
+            printf("----------%d", cliente_fila);
+            debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, ticket->id);
+            buy_coins(ar_clients[cliente_fila]);
+            ar_clients[cliente_fila]->em_fila = 0;
+        }
+        
+        // pthread_mutex_lock(&gate_mutex);
+        
+        // pthread_mutex_unlock(&gate_mutex);
     }
-
-    // ticket_t * ticket = (ticket_t *) args;
-
-    // client = dequeue(gate_queue);     <----ERRO
-    // buy_coins(client);
 
     pthread_exit(NULL);
 }
