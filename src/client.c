@@ -22,15 +22,15 @@ void wait_ticket(client_t *self);  // Funcao onde o cliente espera a liberacao d
 void *enjoy(void *arg){
     client_t *cliente = (client_t *) arg;   // Cliente
 
-    debug("[ENTER] - O turista entrou no parque.\n"); 
     wait_ticket(arg);   // Espera a liberacao da bilheteria
     while (TRUE){
-        if (cliente->coins == 0){  // Se o cliente nao tiver mais moedas, sai do parque
+        debug("[ENTER] - O turista entrou no parque.\n"); 
+        if (ar_clients[(cliente->id - 1)]->coins <= 0){  // Se o cliente nao tiver mais moedas, sai do parque
             break;
         }
-        cliente->coins -= 1;   // Decrementa a quantidade de moedas do cliente por brinquedo usado
-        int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
-        cliente->toys[escolha_toy]->capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
+        ar_clients[(cliente->id - 1)]->coins -= 1;   // Decrementa a quantidade de moedas do cliente por brinquedo usado
+       // int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
+        //cliente->toys[escolha_toy]->capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
 
         // Logica da escolha de brinquedos
     }
@@ -62,32 +62,37 @@ void queue_enter(client_t *self){
     // Sua lógica aqui.
     debug("[WAITING] - Turista [%d] entrou na fila do portao principal\n", self->id);
     // Logica da fila
+<<<<<<< HEAD
     pthread_mutex_lock(&gate_mutex);
     debug("entra mutex")
     enqueue(gate_queue, (self->id - 1));    // Entra na fila da bilheteria
     pthread_mutex_unlock(&gate_mutex);
     debug("sai mutex")
+=======
+    //enqueue(gate_queue, (self->id));    // Entra na fila da bilheteria
+>>>>>>> 1588fa18fc9c60d33c7fd7560e45da2ccad1f860
     ar_clients[self->id - 1]->em_fila = 1;    // Adiciona o cliente ao array de clientes
-
-    while (ar_clients[self->id - 1]->em_fila){  // Enquanto o cliente estiver na fila, ele espera
-        sleep(1);
+    
+    while ((ar_clients[self->id - 1]->em_fila) == 1){  // Enquanto o cliente estiver na fila, ele espera
+       sleep(1);
     }
+    debug("cu\n\n\ncu\n\n\n\n\ncu");
     
-    // Logica da fila
-    //enqueue(gate_queue, self);    <------ ERRO
-
+<<<<<<< HEAD
     // Sua lógica aqui.
+=======
+    debug("[CASH] - Turista [%d] comprou [%d] moedas.\n", self->id, self->coins);
     
-    // Sua lógica aqui.
+>>>>>>> 1588fa18fc9c60d33c7fd7560e45da2ccad1f860
 }
 
 // Essa função recebe como argumento informações sobre o cliente e deve iniciar os clientes.
 void open_gate(client_args *args){
     ar_clients = args->clients; // Array de clientes
-    int n_clients = args->n; // Numero de clientes
+    n_clients = args->n; // Numero de clientes
     pthread_t *client_thread = (pthread_t *) malloc(n_clients * sizeof(pthread_t)); // Aloca memoria para a thread do cliente
     for (int i = 0; i < n_clients; i++) { // Inicializa os clientes
-        pthread_create(&client_thread[i], NULL, enjoy, (void *) args->clients[i]); // Cria a thread do cliente
+        pthread_create(&client_thread[i], NULL, enjoy, (void *) ar_clients[i]); // Cria a thread do cliente
     }
 }
 
@@ -95,13 +100,13 @@ void open_gate(client_args *args){
 void close_gate(){
    //Sua lógica aqui
     sleep(1); 
-
+    
     for (int i = 0; i < n_clients; i++) { // Finaliza os clientes
         pthread_join(client_thread[i], NULL); // Finaliza a thread do cliente
     }
 
-    free(gate_queue);   // Desaloca a memoria da fila
-    pthread_exit(NULL);
+    //free(gate_queue);   // Desaloca a memoria da fila
+    //pthread_exit(NULL);
     
     // Sua lógica aqui
     

@@ -14,11 +14,11 @@
 
 ticket_t **ticket;
 client_t **client;
-
-
+//pthread_t **atendentes;
+pthread_t *atendentes;
 // Thread que implementa uma bilheteria
 void *sell(void *args){
-    ticket_t *ticket = (ticket_t *) args;
+    ticket_t *atendente = (ticket_t *) args;
 
     debug("[INFO] - Bilheteria Abriu!\n");
     sleep(1);
@@ -44,8 +44,10 @@ void *sell(void *args){
 void open_tickets(tickets_args *args){
     // Sua lógica aqui
     // ticket = (ticket_t *) malloc(args->n * sizeof(ticket_t));
-    ticket = args -> tickets;
-    pthread_t atendentes[args->n];
+    ar_tickets = args -> tickets;
+    n_tickets = args -> n;
+    pthread_t *atendentes = (pthread_t *) malloc(n_tickets * sizeof(pthread_t));
+    //pthread_t *atendentes = (pthread_t *) malloc(args->n * sizeof(pthread_t));
     for (int i = 0; i < args->n; i++) {
         pthread_create(&atendentes[i], NULL, sell, (void *) args->tickets[i]);
     }
@@ -56,7 +58,13 @@ void open_tickets(tickets_args *args){
 
 // Essa função deve finalizar a bilheteria
 void close_tickets(){
+    pthread_mutex_lock(&bilheteria_aberta_mutex);
+    bilheteria_aberta = 0;
+    pthread_mutex_unlock(&bilheteria_aberta_mutex);
+    for (int i = 0; i < n_tickets; i++) {
+        pthread_join(atendentes[i], NULL);
+    }
     //Sua lógica aqui
-    free(ticket);
+    //free(ticket);
     
 }
