@@ -23,19 +23,20 @@ void *sell(void *args){
     debug("[INFO] - Bilheteria Abriu!\n");
     sleep(1);
     while (TRUE) {
-        if (is_queue_empty(gate_queue)) {
+        if (!is_queue_empty(gate_queue)) {
+            int cliente_fila = dequeue(gate_queue);
+            
+            debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, atendente->id);
+            buy_coins(ar_clients[cliente_fila]);
+            ar_clients[cliente_fila]->em_fila = 0;
+        } else {
             break;
         }
-        int cliente_fila = dequeue(gate_queue);
-        debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila - 1]->id, ticket[atendente->id - 1]->id);
-        buy_coins(ar_clients[cliente_fila - 1]);
-        ar_clients[cliente_fila - 1]->em_fila = 0;
+        
+        // pthread_mutex_lock(&gate_mutex);
+        
+        // pthread_mutex_unlock(&gate_mutex);
     }
-
-    // ticket_t * ticket = (ticket_t *) args;
-
-    // client = dequeue(gate_queue);     <----ERRO
-    // buy_coins(client);
 
     pthread_exit(NULL);
 }
@@ -46,8 +47,8 @@ void open_tickets(tickets_args *args){
     // ticket = (ticket_t *) malloc(args->n * sizeof(ticket_t));
     ar_tickets = args -> tickets;
     n_tickets = args -> n;
-    pthread_t *atendentes = (pthread_t *) malloc(n_tickets * sizeof(pthread_t));
-    //pthread_t *atendentes = (pthread_t *) malloc(args->n * sizeof(pthread_t));
+    //pthread_t *atendentes = (pthread_t *) malloc(n_tickets * sizeof(pthread_t));
+    atendentes = (pthread_t *) malloc(args->n * sizeof(pthread_t));
     for (int i = 0; i < args->n; i++) {
         pthread_create(&atendentes[i], NULL, sell, (void *) args->tickets[i]);
     }
@@ -62,7 +63,7 @@ void close_tickets(){
     bilheteria_aberta = 0;
     pthread_mutex_unlock(&bilheteria_aberta_mutex);
     for (int i = 0; i < n_tickets; i++) {
-        pthread_join(atendentes[i], NULL);
+        pthread_join(atendentes[0], NULL);
     }
     //Sua lógica aqui
     //free(ticket);

@@ -17,7 +17,6 @@ client_t **ar_clients; // Array de clientes
 
 ticket_t **ar_tickets; // Array de funcionarios
 
-toy_t **arr_toys;
 int n_clients = 0; // Numero de clientes
 
 int n_tickets = 0; // Numero de funcionarios
@@ -26,8 +25,8 @@ int sinalizador_close_gate; // Variavel para sinalizar o fechamento do portao
 
 int bilheteria_aberta = 0;
 
+pthread_mutex_t gate_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 pthread_mutex_t bilheteria_aberta_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para alteração da variavel bilheteria_aberta
 
 pthread_mutex_t sinalizador_close_gate_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para alteração da variavel sinalizador_close_gate
-
-pthread_mutex_t toy_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex utilizado para cada brinquedo 
