@@ -44,6 +44,7 @@ toy_t **init_toys(int number){
         toys[i] = (toy_t *) malloc(sizeof(toy_t));
         toys[i]->id = i + 1;
         toys[i]->capacity = rand() % (MAX_CAPACITY_TOY - 1) + MIN_CAPACITY_TOY;
+        toys[i]->current_capacity = 0;
     }
     return toys;
 }

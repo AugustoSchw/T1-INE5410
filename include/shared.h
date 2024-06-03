@@ -19,8 +19,9 @@ extern int n_clients;
 extern int n_tickets;
 extern int bilheteria_aberta;
 extern ticket_t **ar_tickets;
+extern toy_t **arr_toys;
 extern pthread_mutex_t bilheteria_aberta_mutex;
 extern pthread_mutex_t sinalizador_close_gate_mutex;
-
+extern pthread_mutex_t toy_mutex;
 
 #endif
