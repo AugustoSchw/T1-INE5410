@@ -10,7 +10,9 @@
     #include <unistd.h>
     #include "toy.h"
     #include "shared.h"
-
+    pthread_mutex_t toy_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex utilizado para cada brinquedo 
+    toy_t *arr_toys;   // Array de briquedos
+    
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
     
     void *turn_on(void *args) {
@@ -24,16 +26,16 @@
          //   em_uso = 0;
         //}
 
-        if (toy->current_capacity == toy->capacity) { // Se encheu o brinquedo, inicio ele
+        if (toy->capacity == MAX_CAPACITY_TOY) { // Se encheu o brinquedo, inicio ele
             em_uso = 1;
-        } else if (toy->current_capacity < toy->capacity) { // Se não encheu, mas já tenho clientes, espero e inicializo
+        } else if (toy->capacity < MAX_CAPACITY_TOY) { // Se não encheu, mas já tenho clientes, espero e inicializo
             sleep(2);
             em_uso = 1;
         }
 
-        while (toy->current_capacity > toy->capacity) {
+        while (toy->capacity > MAX_CAPACITY_TOY) {
             em_uso = 0;                     // Não posso iniciar o brinquedo com mais clientes do que ele suporta
-            toy->current_capacity--;
+            toy->capacity--;
         }
 
         em_uso = 1; // Ao chegar aqui, toy->capacity é menor ou igual a MAX_CAPACITY_TOY
@@ -43,7 +45,7 @@
         sleep(3); // Duração do brinquedo
         }
         em_uso = 0;
-        toy->current_capacity = 0; // Resetar capacidade para próxima vez que for brincar
+        toy->capacity = 0; // Resetar capacidade para próxima vez que for brincar
         
         debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
 
@@ -59,11 +61,10 @@
     // Essa função recebe como argumento informações e deve iniciar os brinquedos.
     
     void open_toys(toy_args *args) {
-        arr_toys = (toy_t **) malloc(args->n * sizeof(toy_t**)); // Array de toys
-
+        arr_toys = (toy_t *) malloc(args->n * sizeof(toy_t)); // Array de toys
         for (int i = 0; i < args->n; i++) {  // Criação de cada brinquedo
-            arr_toys[i] = args->toys[i]; // Insere os argumentos no array de toys
-            pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *)args->toys[i]);
+            arr_toys[i] = *args->toys[i]; // Insere os argumentos no array de toys
+            pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *) &arr_toys[i]);
         }
 
     }
