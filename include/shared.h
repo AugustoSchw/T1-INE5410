@@ -18,11 +18,10 @@ extern client_t **ar_clients;
 extern int n_clients;
 extern int n_tickets;
 extern int bilheteria_aberta;
-<<<<<<< HEAD
+
 extern pthread_mutex_t gate_mutex;
-=======
 extern ticket_t **ar_tickets;
->>>>>>> 1588fa18fc9c60d33c7fd7560e45da2ccad1f860
+
 extern pthread_mutex_t bilheteria_aberta_mutex;
 extern pthread_mutex_t sinalizador_close_gate_mutex;
 
