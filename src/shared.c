@@ -30,3 +30,7 @@ pthread_mutex_t gate_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t bilheteria_aberta_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para alteração da variavel bilheteria_aberta
 
 pthread_mutex_t sinalizador_close_gate_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para alteração da variavel sinalizador_close_gate
+
+int tempo_espera_cliente = 1;
+
+int tempo_exec_toy = 2;

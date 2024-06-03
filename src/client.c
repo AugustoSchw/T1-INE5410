@@ -25,7 +25,7 @@ void *enjoy(void *arg){
     wait_ticket(arg);   // Espera a liberacao da bilheteria
     debug("[ENTER] - O turista entrou no parque.\n"); 
     while (TRUE){
-        if (ar_clients[(cliente->id - 1)]->coins <= 0){  // Se o cliente nao tiver mais moedas, sai do parque
+        if (ar_clients[(cliente->id - 1)]->coins < 0){  // Se o cliente nao tiver mais moedas, sai do parque
             break;
         }
         ar_clients[(cliente->id - 1)]->coins -= 1;   // Decrementa a quantidade de moedas do cliente por brinquedo usado
@@ -42,9 +42,7 @@ void *enjoy(void *arg){
 // Funcao onde o cliente compra as moedas para usar os brinquedos
 void buy_coins(client_t *self){
     // Sua lógica aqui
-    ar_clients[self->id - 1]->coins = rand() % MAX_COINS; // Cede um valor aleatório de moedas ao cliente
-
-    debug("[CASH] - Turista [%d] comprou [%d] moedas.\n", self->id, self->coins);
+    ar_clients[self->id - 1]->coins = (rand() % MAX_COINS) + 1; // Cede um valor aleatório de moedas ao cliente
 }
 
 // Função onde o cliente espera a liberacao da bilheteria para adentrar ao parque.
@@ -52,7 +50,7 @@ void wait_ticket(client_t *self){
     // Sua lógica aqui
     while (!bilheteria_aberta){ // Enquanto a bilheteria não estiver aberta, o cliente espera
         debug(" Turista [%d] esperando a bilheteria abrir.\n", self->id);
-        sleep(1);
+        sleep(tempo_espera_cliente);
     }
     queue_enter(self);   // Entra na fila da bilheteria
 }
@@ -60,6 +58,7 @@ void wait_ticket(client_t *self){
 // Funcao onde o cliente entra na fila da bilheteria
 void queue_enter(client_t *self){
     // Sua lógica aqui.
+
     debug("[WAITING] - Turista [%d] entrou na fila do portao principal\n", self->id);
     // Logica da fila
 
@@ -80,6 +79,9 @@ void queue_enter(client_t *self){
 
 // Essa função recebe como argumento informações sobre o cliente e deve iniciar os clientes.
 void open_gate(client_args *args){
+    pthread_mutex_lock(&sinalizador_close_gate_mutex);
+    sinalizador_close_gate = 0;
+    pthread_mutex_unlock(&sinalizador_close_gate_mutex);
     ar_clients = args->clients; // Array de clientes
     n_clients = args->n; // Numero de clientes
     client_thread = (pthread_t *) malloc(n_clients * sizeof(pthread_t)); // Aloca memoria para a thread do cliente
@@ -91,11 +93,12 @@ void open_gate(client_args *args){
 // Essa função deve finalizar os clientes
 void close_gate(){
    //Sua lógica aqui
-    sleep(1); 
-    
-    for (int i = 0; i < n_clients - 1; i++) { // Finaliza os clientes
+    for (int i = 0; i < n_clients; i++) { // Finaliza os clientes
         pthread_join(client_thread[i], NULL); // Finaliza a thread do cliente
     }
+    pthread_mutex_lock(&sinalizador_close_gate_mutex);
+    sinalizador_close_gate = 1;
+    pthread_mutex_unlock(&sinalizador_close_gate_mutex);
 
     //free(gate_queue);   // Desaloca a memoria da fila
     //pthread_exit(NULL);

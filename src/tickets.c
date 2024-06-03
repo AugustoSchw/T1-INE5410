@@ -21,14 +21,18 @@ void *sell(void *args){
     ticket_t *atendente = (ticket_t *) args;
 
     debug("[INFO] - Bilheteria Abriu!\n");
-    sleep(1);
     while (TRUE) {
-        if (!is_queue_empty(gate_queue)) {
+        if (!sinalizador_close_gate) {
+            if (!is_queue_empty(gate_queue)) {
             int cliente_fila = dequeue(gate_queue);
             
             debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, atendente->id);
             buy_coins(ar_clients[cliente_fila]);
             ar_clients[cliente_fila]->em_fila = 0;
+            } else {
+                sleep(1);
+                continue;
+            }
         } else {
             break;
         }
@@ -59,11 +63,12 @@ void open_tickets(tickets_args *args){
 
 // Essa função deve finalizar a bilheteria
 void close_tickets(){
+
     pthread_mutex_lock(&bilheteria_aberta_mutex);
-    bilheteria_aberta = 0;
+    bilheteria_aberta = 0; // Garante atomicidade da variável global com o mutex
     pthread_mutex_unlock(&bilheteria_aberta_mutex);
     for (int i = 0; i < n_tickets; i++) {
-        pthread_join(atendentes[0], NULL);
+        pthread_join(atendentes[i], NULL);  // Sincronização de todas as threads dos funcionarios
     }
     //Sua lógica aqui
     //free(ticket);

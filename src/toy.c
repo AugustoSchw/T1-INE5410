@@ -42,7 +42,7 @@
         if (em_uso == 1){
         debug("[RUNNING] - O brinquedo [%d] está em funcionamento.\n", toy->id);
         
-        sleep(3); // Duração do brinquedo
+        sleep(tempo_exec_toy); // Duração do brinquedo
         }
         em_uso = 0;
         toy->capacity = 0; // Resetar capacidade para próxima vez que for brincar
