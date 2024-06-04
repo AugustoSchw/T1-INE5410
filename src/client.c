@@ -25,7 +25,7 @@ void *enjoy(void *arg){
     wait_ticket(arg);   // Espera a liberacao da bilheteria
     debug("[ENTER] - O turista entrou no parque.\n"); 
     while (TRUE){
-        if (ar_clients[(cliente->id - 1)]->coins < 0){  // Se o cliente nao tiver mais moedas, sai do parque
+        if (ar_clients[(cliente->id - 1)]->coins <= 0){  // Se o cliente nao tiver mais moedas, sai do parque
             break;
         }
         sleep(1);
