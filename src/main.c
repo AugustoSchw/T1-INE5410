@@ -152,11 +152,14 @@ int main(int argc, char *argv[]){
     *********************************************************************************/
     
     // Sincronize aqui
+    
 
     // Desalocando argumentos.
     free(cli_args);
     free(ticket_args);
     free(toys_args);
+    //free(ar_clients);
+    //free(ar_tickets);
 
     // Destruindo filas
     destroy_main_queue();

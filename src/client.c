@@ -33,7 +33,13 @@ void *enjoy(void *arg){
         sleep(1);
         debug("O turista [%d] está com [%d] moedas.\n", cliente->id, cliente->coins);
         int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
+        debug("[INFO] O Turista [%d] está brincando no brinquedo [%d]\n", cliente -> id, cliente->toys[escolha_toy]->id);
+        pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);
         cliente->toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
+        pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
+        while(cliente->toys[escolha_toy]->em_uso) {
+            sleep(1);
+        }
 
         // Logica da escolha de brinquedos
     }
@@ -105,6 +111,10 @@ void close_gate(){
     pthread_mutex_lock(&sinalizador_close_gate_mutex);
     sinalizador_close_gate = 1;
     pthread_mutex_unlock(&sinalizador_close_gate_mutex);
+
+    pthread_mutex_lock(&sinalizador_close_toy_mutex);
+    sinalizador_close_toy = 1;
+    pthread_mutex_unlock(&sinalizador_close_toy_mutex);
 
     //free(gate_queue);   // Desaloca a memoria da fila
     //pthread_exit(NULL);

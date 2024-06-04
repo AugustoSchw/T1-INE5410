@@ -9,53 +9,45 @@
     #include <pthread.h>
     #include <unistd.h>
     #include "toy.h"
-    #include "shared.h" 
+    #include "shared.h"
+    pthread_mutex_t toy_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex utilizado para cada brinquedo 
     
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
     
     void *turn_on(void *args) {
         toy_t *toy = (toy_t *)args; 
-        int em_uso;
         debug("[ON] - O brinquedo [%d] foi ligado.\n", toy->id);
+        while(!sinalizador_close_toy) {
         
-        sleep(5); // Tempo suficiente pra alocar os clientes nos brinquedos
-        while (TRUE) {
-            if (ar_clients == NULL) {
-                break;
-            }
-            pthread_mutex_lock(&toy->mutex); // Mutex para cada brinquedo que for acessar.
+            //pthread_mutex_lock(&toy_mutex); // Mutex para cada brinquedo que for acessar. REVER USO DO MUTEX
 
-            while (toy->current_capacity == 0) { // Enquanto não houver clientes no brinquedo, ele ficará aguardando
-                em_uso = 0;
-                if (ar_clients == NULL) {
-                    break;
-                }
+            // Tem que adicionar um semáforo para o toys pois quando o current_Capacity é att dps da linha 26, a att é sobrescrita por zero, entao tem que fazer um sistema de espera para o current capacity
+
+            if (toy->current_capacity <= MAX_CAPACITY_TOY && toy->current_capacity >= MIN_CAPACITY_TOY) { // Se encheu o brinquedo, inicio ele
+                toy->em_uso = 1;
+            } else {
+                toy->em_uso = 0;
             }
 
-            if (toy->current_capacity == toy->capacity) { // Se encheu o brinquedo, inicio ele
-                em_uso = 1;
-            } else if (toy->current_capacity < toy->capacity) { // Se não encheu, mas já tenho clientes, espero e inicializo
-                sleep(1);
-                em_uso = 1;
-            }
-
-            while (toy->current_capacity > toy->capacity) {
-                em_uso = 0;                     // Não posso iniciar o brinquedo com mais clientes do que ele suporta
+            while (toy->current_capacity > MAX_CAPACITY_TOY) {
+                // Não posso iniciar o brinquedo com mais clientes do que ele suporta
                 toy->current_capacity--;
             }
 
-            em_uso = 1; // Ao chegar aqui, toy->capacity é menor ou igual a MAX_CAPACITY_TOY
-            if (em_uso == 1){
+            //em_uso = 1; // Ao chegar aqui, toy->capacity é menor ou igual a MAX_CAPACITY_TOY
+            if (toy->em_uso == 1){
                 debug("[RUNNING] - O brinquedo [%d] está em funcionamento.\n", toy->id);
-                
                 sleep(tempo_exec_toy); // Duração do brinquedo
+                debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
             }
-            em_uso = 0;
+            //while(toy->em_uso) {
+            //    sleep(tempo_exec_toy); // Duração do brinquedo
+            //}
+            toy->em_uso = 0;
             toy->current_capacity = 0; // Resetar capacidade para próxima vez que for brincar
             
-            debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
 
-            pthread_mutex_unlock(&toy->mutex); // Libero o mutex para o brinquedo que foi acessado
+            //pthread_mutex_unlock(&toy_mutex); // Libero o mutex para o brinquedo que foi acessado
         }
         
         debug("[OFF] - O brinquedo [%d] foi desligado.\n", toy->id);
@@ -67,10 +59,14 @@
     // Essa função recebe como argumento informações e deve iniciar os brinquedos.
     
     void open_toys(toy_args *args) {
-        arr_toys = (toy_t **) malloc(args->n * sizeof(toy_t)); // Array de toys
+        //ar_toys = (toy_t **) malloc(args->n * sizeof(toy_t)); // Array de toys
+        pthread_mutex_lock(&sinalizador_close_toy_mutex);
+        sinalizador_close_toy = 0;
+        pthread_mutex_unlock(&sinalizador_close_toy_mutex);
+        ar_toys = args->toys;
         for (int i = 0; i < args->n; i++) {  // Criação de cada brinquedo
-            arr_toys[i] = args->toys[i]; // Insere os argumentos no array de toys
-            pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *) arr_toys[i]);
+            //ar_toys[i] = args->toys[i]; // Insere os argumentos no array de toys
+            pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *) ar_toys[i]);
         }
 
     }
@@ -78,7 +74,7 @@
     // Desligando os brinquedos
     void close_toys(){
         // Sua lógica aqui
-        sleep(5);
-        pthread_exit(NULL);
-        free(arr_toys);
+        for(int i = 0; i < sizeof(ar_toys)/sizeof(toy_t **); i ++) {
+            pthread_join(ar_toys[i]->thread, NULL);
+        }
     }

@@ -29,8 +29,9 @@ typedef struct toy{
   int id;                   // O id de um brinquedo.
   int capacity;             // A capacidade total de um brinquedo.
   int current_capacity;     // A lotação atual no brinquedo.
+  int em_uso;               // Verifica se o brinquedo esta sendo usado
   pthread_t thread;         // A thread de um brinquedo.
-  pthread_mutex_t mutex; // Mute de cada brinquedo
+  pthread_mutex_t mutex;    // Mutex de cada brinquedo
 } toy_t;
 
 /* Adicione as estruturas de sincronização que achar necessárias */

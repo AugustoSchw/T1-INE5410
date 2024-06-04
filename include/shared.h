@@ -17,14 +17,16 @@ extern int sinalizador_close_gate;
 extern int n_clients;
 extern int n_tickets;
 extern int bilheteria_aberta;
+extern int sinalizador_close_toy;
 
 extern ticket_t **ar_tickets;
 extern client_t **ar_clients;
-extern toy_t **arr_toys;
+extern toy_t **ar_toys;
 
 extern pthread_mutex_t gate_mutex;
 extern pthread_mutex_t bilheteria_aberta_mutex;
 extern pthread_mutex_t sinalizador_close_gate_mutex;
+extern pthread_mutex_t sinalizador_close_toy_mutex;
 extern pthread_mutex_t toy_mutex;
 extern int tempo_espera_cliente;
 extern int tempo_exec_toy;
