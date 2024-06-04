@@ -27,6 +27,9 @@
 
             while (toy->current_capacity == 0) { // Enquanto não houver clientes no brinquedo, ele ficará aguardando
                 em_uso = 0;
+                if (ar_clients == NULL) {
+                    break;
+                }
             }
 
             if (toy->current_capacity == toy->capacity) { // Se encheu o brinquedo, inicio ele
@@ -43,9 +46,9 @@
 
             em_uso = 1; // Ao chegar aqui, toy->capacity é menor ou igual a MAX_CAPACITY_TOY
             if (em_uso == 1){
-            debug("[RUNNING] - O brinquedo [%d] está em funcionamento.\n", toy->id);
-            
-            sleep(tempo_exec_toy); // Duração do brinquedo
+                debug("[RUNNING] - O brinquedo [%d] está em funcionamento.\n", toy->id);
+                
+                sleep(tempo_exec_toy); // Duração do brinquedo
             }
             em_uso = 0;
             toy->current_capacity = 0; // Resetar capacidade para próxima vez que for brincar
