@@ -80,8 +80,6 @@ void queue_enter(client_t *self){
     enqueue(gate_queue, (self->id - 1));    // Entra na fila da bilheteria
     pthread_mutex_unlock(&gate_mutex);
 
-    //enqueue(gate_queue, (self->id));    // Entra na fila da bilheteria
-
     ar_clients[self->id - 1]->em_fila = 1;    // Adiciona o cliente ao array de clientes
     
     while ((ar_clients[self->id - 1]->em_fila) == 1){  // Enquanto o cliente estiver na fila, ele espera

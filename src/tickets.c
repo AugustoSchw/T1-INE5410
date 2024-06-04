@@ -40,9 +40,6 @@ void *sell(void *args){
             break;
         }
         
-        // pthread_mutex_lock(&gate_mutex);
-        
-        // pthread_mutex_unlock(&gate_mutex);
     }
     
     pthread_exit(NULL);
@@ -51,7 +48,6 @@ void *sell(void *args){
 // Essa função recebe como argumento informações sobre a bilheteria e deve iniciar os atendentes.
 void open_tickets(tickets_args *args){
     // Sua lógica aqui
-    // ticket = (ticket_t *) malloc(args->n * sizeof(ticket_t));
     ar_tickets = args -> tickets;
     n_tickets = args -> n;
     //pthread_t *atendentes = (pthread_t *) malloc(n_tickets * sizeof(pthread_t));

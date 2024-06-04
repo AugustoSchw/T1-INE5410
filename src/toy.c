@@ -9,8 +9,7 @@
     #include <pthread.h>
     #include <unistd.h>
     #include "toy.h"
-    #include "shared.h"
-    //pthread_mutex_t toy_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex utilizado para cada brinquedo 
+    #include "shared.h" 
     
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
     
@@ -21,8 +20,6 @@
         debug("[ON] - O brinquedo [%d] foi ligado.\n", toy->id);
         while(!sinalizador_close_toy) {
         
-            //pthread_mutex_lock(&toy_mutex); // Mutex para cada brinquedo que for acessar. REVER USO DO MUTEX
-
             // Tem que adicionar um semáforo para o toys pois quando o current_Capacity é att dps da linha 26, a att é sobrescrita por zero, entao tem que fazer um sistema de espera para o current capacity
 
             if (toy->current_capacity <= MAX_CAPACITY_TOY && toy->current_capacity >= MIN_CAPACITY_TOY) { // Se encheu o brinquedo, inicio ele
@@ -46,14 +43,10 @@
                     sem_post(&semaforo_toys);
                 }
             }
-            //while(toy->em_uso) {
-            //    sleep(tempo_exec_toy); // Duração do brinquedo
-            //}
+
             toy->em_uso = 0;
             toy->current_capacity = 0; // Resetar capacidade para próxima vez que for brincar
             
-
-            //pthread_mutex_unlock(&toy_mutex); // Libero o mutex para o brinquedo que foi acessado
         }
         
         debug("[OFF] - O brinquedo [%d] foi desligado.\n", toy->id);
@@ -65,14 +58,12 @@
     // Essa função recebe como argumento informações e deve iniciar os brinquedos.
     
     void open_toys(toy_args *args) {
-        //ar_toys = (toy_t **) malloc(args->n * sizeof(toy_t)); // Array de toys
         pthread_mutex_lock(&sinalizador_close_toy_mutex);
         sinalizador_close_toy = 0;
         pthread_mutex_unlock(&sinalizador_close_toy_mutex);
         ar_toys = args->toys;
         n_toys = args -> n;
         for (int i = 0; i < n_toys; i++) {  // Criação de cada brinquedo
-            //ar_toys[i] = args->toys[i]; // Insere os argumentos no array de toys
             pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *) ar_toys[i]);
         }
 
