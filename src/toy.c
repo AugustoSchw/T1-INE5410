@@ -65,7 +65,8 @@
         sinalizador_close_toy = 0;
         pthread_mutex_unlock(&sinalizador_close_toy_mutex);
         ar_toys = args->toys;
-        for (int i = 0; i < args->n; i++) {  // Criação de cada brinquedo
+        n_toys = args -> n;
+        for (int i = 0; i < n_toys; i++) {  // Criação de cada brinquedo
             //ar_toys[i] = args->toys[i]; // Insere os argumentos no array de toys
             pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *) ar_toys[i]);
         }
@@ -75,7 +76,7 @@
     // Desligando os brinquedos
     void close_toys(){
         // Sua lógica aqui
-        for(int i = 0; i < sizeof(ar_toys)/sizeof(toy_t **); i ++) {
+        for(int i = 0; i < n_toys; i ++) {
             pthread_join(ar_toys[i]->thread, NULL);
         }
     }

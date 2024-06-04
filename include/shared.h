@@ -16,9 +16,11 @@ extern Queue *gate_queue;
 extern int sinalizador_close_gate;
 extern int n_clients;
 extern int n_tickets;
+extern int n_toys;
 extern int bilheteria_aberta;
 extern int tempo_espera_toy;
 extern int sinalizador_close_toy;
+extern int sinalizador_close_park;
 
 extern ticket_t **ar_tickets;
 extern client_t **ar_clients;

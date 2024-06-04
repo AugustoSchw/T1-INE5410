@@ -19,6 +19,8 @@ int n_clients = 0; // Numero de clientes
 
 int n_tickets = 0; // Numero de funcionarios
 
+int n_toys = 0;
+
 
 // Variáveis para controle de tempo:
 
@@ -55,5 +57,7 @@ toy_t **ar_toys;   // Array de briquedos
 int sinalizador_close_gate; // Variavel para sinalizar o fechamento do portao
 
 int sinalizador_close_toy = 0;
+
+int sinalizador_close_park = 0;
 
 int bilheteria_aberta = 0;
