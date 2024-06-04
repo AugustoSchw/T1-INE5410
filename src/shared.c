@@ -17,6 +17,8 @@ client_t **ar_clients; // Array de clientes
 
 ticket_t **ar_tickets; // Array de funcionarios
 
+toy_t **arr_toys;   // Array de briquedos
+
 int n_clients = 0; // Numero de clientes
 
 int n_tickets = 0; // Numero de funcionarios
@@ -31,6 +33,7 @@ pthread_mutex_t bilheteria_aberta_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex pa
 
 pthread_mutex_t sinalizador_close_gate_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para alteração da variavel sinalizador_close_gate
 
+pthread_mutex_t toy_mutex;
 int tempo_espera_cliente = 1;
 
 int tempo_exec_toy = 2;

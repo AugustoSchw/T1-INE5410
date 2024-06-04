@@ -28,9 +28,12 @@ void *enjoy(void *arg){
         if (ar_clients[(cliente->id - 1)]->coins < 0){  // Se o cliente nao tiver mais moedas, sai do parque
             break;
         }
+        sleep(1);
         ar_clients[(cliente->id - 1)]->coins -= 1;   // Decrementa a quantidade de moedas do cliente por brinquedo usado
-       // int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
-        //cliente->toys[escolha_toy]->capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
+        sleep(1);
+        debug("O turista [%d] está com [%d] moedas.\n", cliente->id, cliente->coins);
+        int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
+        cliente->toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
 
         // Logica da escolha de brinquedos
     }
@@ -82,11 +85,13 @@ void open_gate(client_args *args){
     pthread_mutex_lock(&sinalizador_close_gate_mutex);
     sinalizador_close_gate = 0;
     pthread_mutex_unlock(&sinalizador_close_gate_mutex);
-    ar_clients = args->clients; // Array de clientes
     n_clients = args->n; // Numero de clientes
+    ar_clients = (client_t **) malloc(args->n * sizeof(client_t)); // Array de toys
     client_thread = (pthread_t *) malloc(n_clients * sizeof(pthread_t)); // Aloca memoria para a thread do cliente
     for (int i = 0; i < n_clients; i++) { // Inicializa os clientes
+        ar_clients[i] = args->clients[i]; // Insere os argumentos no array de clientes
         pthread_create(&client_thread[i], NULL, enjoy, (void *) ar_clients[i]); // Cria a thread do cliente
+        
     }
 }
 
@@ -96,6 +101,7 @@ void close_gate(){
     for (int i = 0; i < n_clients; i++) { // Finaliza os clientes
         pthread_join(client_thread[i], NULL); // Finaliza a thread do cliente
     }
+    ar_clients = NULL;
     pthread_mutex_lock(&sinalizador_close_gate_mutex);
     sinalizador_close_gate = 1;
     pthread_mutex_unlock(&sinalizador_close_gate_mutex);
