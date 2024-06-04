@@ -43,6 +43,10 @@ pthread_mutex_t sinalizador_close_gate_mutex = PTHREAD_MUTEX_INITIALIZER; // Mut
 
 pthread_mutex_t toy_mutex;
 
+// Semáforos:
+
+sem_t semaforo_toys;
+
 // Ponteiros e ponteiros de ponteiros:
 
 Queue *gate_queue = NULL;

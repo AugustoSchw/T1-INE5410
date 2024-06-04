@@ -31,6 +31,9 @@ extern pthread_mutex_t bilheteria_aberta_mutex;
 extern pthread_mutex_t sinalizador_close_gate_mutex;
 extern pthread_mutex_t sinalizador_close_toy_mutex;
 extern pthread_mutex_t toy_mutex;
+
+extern sem_t semaforo_toys;
+
 extern int tempo_espera_cliente;
 extern int tempo_exec_toy;
 

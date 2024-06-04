@@ -25,7 +25,7 @@ void *enjoy(void *arg){
     wait_ticket(arg);   // Espera a liberacao da bilheteria
     debug("[ENTER] - O turista entrou no parque.\n"); 
     while (TRUE){
-        if (ar_clients[(cliente->id - 1)]->coins <= 0){  // Se o cliente nao tiver mais moedas, sai do parque
+        if (ar_clients[(cliente->id - 1)]->coins <= 0) {  // Se o cliente nao tiver mais moedas, sai do parque
             break;
         }
         sleep(1);
@@ -37,9 +37,13 @@ void *enjoy(void *arg){
         pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);
         cliente->toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
         pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
-        while(cliente->toys[escolha_toy]->em_uso) {
-            sleep(tempo_espera_cliente);
-        }
+
+        //while(cliente->toys[escolha_toy]->em_uso) {
+        //    sleep(tempo_espera_cliente);
+        //}
+
+        sem_wait(&semaforo_toys);
+        
 
         // Logica da escolha de brinquedos
     }
@@ -51,7 +55,8 @@ void *enjoy(void *arg){
 // Funcao onde o cliente compra as moedas para usar os brinquedos
 void buy_coins(client_t *self){
     // Sua lógica aqui
-    ar_clients[self->id - 1]->coins = (rand() % MAX_COINS) + 1; // Cede um valor aleatório de moedas ao cliente
+    // ar_clients[self->id - 1]->coins = (rand() % MAX_COINS) + 1; // Cede um valor aleatório de moedas ao cliente
+    ar_clients[self->id - 1]->coins = 2;
 }
 
 // Função onde o cliente espera a liberacao da bilheteria para adentrar ao parque.

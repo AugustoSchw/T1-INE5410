@@ -14,8 +14,10 @@
     
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
     
+    
     void *turn_on(void *args) {
-        toy_t *toy = (toy_t *)args; 
+        toy_t *toy = (toy_t *)args;
+        sem_init(&semaforo_toys, 0, 0);
         debug("[ON] - O brinquedo [%d] foi ligado.\n", toy->id);
         while(!sinalizador_close_toy) {
         
@@ -40,6 +42,9 @@
                 debug("[RUNNING] - O brinquedo [%d] está em funcionamento com [%d] passageiro(s).\n", toy->id, toy->current_capacity);
                 sleep(tempo_exec_toy); // Duração do brinquedo
                 debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
+                for (int i = 0; i < toy->current_capacity; i++) {
+                    sem_post(&semaforo_toys);
+                }
             }
             //while(toy->em_uso) {
             //    sleep(tempo_exec_toy); // Duração do brinquedo
