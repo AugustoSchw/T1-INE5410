@@ -23,22 +23,20 @@ void *sell(void *args){
     debug("[INFO] - Bilheteria Abriu!\n");
     while (TRUE) {
         if (!sinalizador_close_gate) {
-            //pthread_mutex_lock(&ar_tickets[atendente->id - 1]->mutex_ticket);
-            pthread_mutex_lock(&gate_mutex);
-            if (!is_queue_empty(gate_queue)) {
-                int cliente_fila = dequeue(gate_queue);
-                pthread_mutex_unlock(&gate_mutex);
-                debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, atendente->id);
-                buy_coins(ar_clients[cliente_fila]);
-                ar_clients[cliente_fila]->em_fila = 0;
-                //pthread_mutex_unlock(&ar_tickets[atendente->id - 1]->mutex_ticket);
+            pthread_mutex_lock(&gate_mutex); // Garante que apenas um atendente atenda um cliente por vez
+            if (!is_queue_empty(gate_queue)) { // Se a fila não estiver vazia
+                int cliente_fila = dequeue(gate_queue); // Pega o cliente que está na frente da fila
+                pthread_mutex_unlock(&gate_mutex); // Libera o mutex para que outros atendentes possam atender outros clientes
+                debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, atendente->id); 
+                buy_coins(ar_clients[cliente_fila]); // Função que executa a compra de moedas
+                ar_clients[cliente_fila]->em_fila = 0; // Cliente não está mais na fila, pode entrar no parque
             } else {
-                pthread_mutex_unlock(&gate_mutex);
+                pthread_mutex_unlock(&gate_mutex); // Se a fila estiver vazia, libera o mutex
                 sleep(1);
                 continue;
             }
         } else {
-            pthread_mutex_unlock(&gate_mutex);
+            pthread_mutex_unlock(&gate_mutex); // Se o parque estiver fechando, libera o mutex
             break;
         }
         
@@ -61,17 +59,17 @@ void open_tickets(tickets_args *args){
     for (int i = 0; i < args->n; i++) {
         pthread_create(&atendentes[i], NULL, sell, (void *) args->tickets[i]);
     }
-    pthread_mutex_lock(&bilheteria_aberta_mutex);
-    bilheteria_aberta = 1;
-    pthread_mutex_unlock(&bilheteria_aberta_mutex);
+    pthread_mutex_lock(&bilheteria_aberta_mutex); // Garante atomicidade da variável global com o mutex
+    bilheteria_aberta = 1; // Bilheteria aberta
+    pthread_mutex_unlock(&bilheteria_aberta_mutex); // Libera o mutex
 }
 
 // Essa função deve finalizar a bilheteria
 void close_tickets(){
 
-    pthread_mutex_lock(&bilheteria_aberta_mutex);
+    pthread_mutex_lock(&bilheteria_aberta_mutex); // Garante atomicidade da variável global com o mutex
     bilheteria_aberta = 0; // Garante atomicidade da variável global com o mutex
-    pthread_mutex_unlock(&bilheteria_aberta_mutex);
+    pthread_mutex_unlock(&bilheteria_aberta_mutex); // Libera o mutex
     for (int i = 0; i < n_tickets; i++) {
         pthread_join(atendentes[i], NULL);  // Sincronização de todas as threads dos funcionarios
     }

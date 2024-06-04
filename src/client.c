@@ -38,7 +38,7 @@ void *enjoy(void *arg){
         cliente->toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
         pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
         while(cliente->toys[escolha_toy]->em_uso) {
-            sleep(1);
+            sleep(tempo_espera_cliente);
         }
 
         // Logica da escolha de brinquedos

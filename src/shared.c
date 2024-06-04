@@ -11,25 +11,25 @@
  *   NÃO EDITAR ESSAS VARIAVEIS   *
  *          ATENÇÃO               *
  *********************************/
-Queue *gate_queue = NULL;
 
-client_t **ar_clients; // Array de clientes
 
-ticket_t **ar_tickets; // Array de funcionarios
-
-toy_t **ar_toys;   // Array de briquedos
+// Variáveis para guardar o tamanho de cada array:
 
 int n_clients = 0; // Numero de clientes
 
 int n_tickets = 0; // Numero de funcionarios
 
+
+// Variáveis para controle de tempo:
+
+int tempo_espera_cliente = 1;
+
+int tempo_exec_toy = 2;
+
 int tempo_espera_toy = 2;
 
-int sinalizador_close_gate; // Variavel para sinalizar o fechamento do portao
 
-int sinalizador_close_toy = 0;
-
-int bilheteria_aberta = 0;
+// Mutexes:
 
 pthread_mutex_t gate_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -40,6 +40,20 @@ pthread_mutex_t bilheteria_aberta_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex pa
 pthread_mutex_t sinalizador_close_gate_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex para alteração da variavel sinalizador_close_gate
 
 pthread_mutex_t toy_mutex;
-int tempo_espera_cliente = 1;
 
-int tempo_exec_toy = 2;
+// Ponteiros e ponteiros de ponteiros:
+
+Queue *gate_queue = NULL;
+
+client_t **ar_clients; // Array de clientes
+
+ticket_t **ar_tickets; // Array de funcionarios
+
+toy_t **ar_toys;   // Array de briquedos
+
+// Variáveis usadas como parametro para que o while loop de alguma thread acabe:
+int sinalizador_close_gate; // Variavel para sinalizar o fechamento do portao
+
+int sinalizador_close_toy = 0;
+
+int bilheteria_aberta = 0;
