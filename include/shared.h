@@ -17,6 +17,7 @@ extern int sinalizador_close_gate;
 extern int n_clients;
 extern int n_tickets;
 extern int bilheteria_aberta;
+extern int tempo_espera_toy;
 extern int sinalizador_close_toy;
 
 extern ticket_t **ar_tickets;

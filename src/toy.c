@@ -10,7 +10,7 @@
     #include <unistd.h>
     #include "toy.h"
     #include "shared.h"
-    pthread_mutex_t toy_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex utilizado para cada brinquedo 
+    //pthread_mutex_t toy_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex utilizado para cada brinquedo 
     
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
     
@@ -27,6 +27,7 @@
                 toy->em_uso = 1;
             } else {
                 toy->em_uso = 0;
+                sleep(tempo_espera_toy);
             }
 
             while (toy->current_capacity > MAX_CAPACITY_TOY) {
@@ -34,9 +35,9 @@
                 toy->current_capacity--;
             }
 
-            //em_uso = 1; // Ao chegar aqui, toy->capacity é menor ou igual a MAX_CAPACITY_TOY
-            if (toy->em_uso == 1){
-                debug("[RUNNING] - O brinquedo [%d] está em funcionamento.\n", toy->id);
+            toy->em_uso = 1; // Ao chegar aqui, toy->capacity é menor ou igual a MAX_CAPACITY_TOY
+            if (toy->em_uso == 1 && toy->current_capacity != 0){
+                debug("[RUNNING] - O brinquedo [%d] está em funcionamento com [%d] passageiro(s).\n", toy->id, toy->current_capacity);
                 sleep(tempo_exec_toy); // Duração do brinquedo
                 debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
             }

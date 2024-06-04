@@ -30,10 +30,10 @@ void *enjoy(void *arg){
         }
         sleep(1);
         ar_clients[(cliente->id - 1)]->coins -= 1;   // Decrementa a quantidade de moedas do cliente por brinquedo usado
-        sleep(1);
-        debug("O turista [%d] está com [%d] moedas.\n", cliente->id, cliente->coins);
+        sleep(3);
+        debug("O turista [%d] gastou uma moeda e está com [%d] moedas.\n", cliente->id, cliente->coins);
         int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
-        debug("[INFO] O Turista [%d] está brincando no brinquedo [%d]\n", cliente -> id, cliente->toys[escolha_toy]->id);
+        debug("[INFO] O Turista [%d] está no brinquedo [%d]\n", cliente -> id, cliente->toys[escolha_toy]->id);
         pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);
         cliente->toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
         pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);

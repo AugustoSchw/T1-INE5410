@@ -23,6 +23,8 @@ int n_clients = 0; // Numero de clientes
 
 int n_tickets = 0; // Numero de funcionarios
 
+int tempo_espera_toy = 2;
+
 int sinalizador_close_gate; // Variavel para sinalizar o fechamento do portao
 
 int sinalizador_close_toy = 0;
