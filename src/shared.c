@@ -24,7 +24,7 @@ int n_toys = 0;
 
 // Variáveis para controle de tempo:
 
-int tempo_espera_cliente = 1;
+int tempo_espera_cliente = 2;
 
 int tempo_exec_toy = 2;
 

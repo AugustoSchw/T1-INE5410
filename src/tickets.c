@@ -39,9 +39,8 @@ void *sell(void *args){
             pthread_mutex_unlock(&gate_mutex); // Se o parque estiver fechando, libera o mutex
             break;
         }
-        
     }
-    
+
     pthread_exit(NULL);
 }
 
