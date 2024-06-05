@@ -33,16 +33,27 @@ void *enjoy(void *arg){
         sleep(3);
         debug("[INFO] O turista [%d] gastou uma moeda e está com [%d] moedas.\n", cliente->id, cliente->coins);
         int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
+        //pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);
+        if(ar_toys[escolha_toy]->current_capacity >= ar_toys[escolha_toy]->capacity) {
+            ar_clients[(cliente->id - 1)]-> coins += 1;
+            //pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
+            debug("[INFO] O turista [%d] tentou entrar no brinquedo [%d] mas ja estava lotado!\n", cliente -> id, cliente->toys[escolha_toy]->id);
+            continue;
+        }
+        //pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
+        
         debug("[INFO] O turista [%d] está no brinquedo [%d]\n", cliente -> id, cliente->toys[escolha_toy]->id);
         pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);
-        cliente->toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
+        ar_toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
         pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
+        sem_wait(&semaforo_toys);
+        
 
         //while(cliente->toys[escolha_toy]->em_uso) {
         //    sleep(tempo_espera_cliente);
         //}
 
-        sem_wait(&semaforo_toys);
+        
         
 
         // Logica da escolha de brinquedos

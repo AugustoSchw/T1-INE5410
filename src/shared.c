@@ -28,7 +28,7 @@ int tempo_espera_cliente = 1;
 
 int tempo_exec_toy = 2;
 
-int tempo_espera_toy = 2;
+int tempo_espera_toy = 1;
 
 
 // Mutexes:
