@@ -20,28 +20,31 @@
         
             // Tem que adicionar um semáforo para o toys pois quando o current_Capacity é att dps da linha 26, a att é sobrescrita por zero, entao tem que fazer um sistema de espera para o current capacity
 
-            pthread_mutex_lock(&toy->mutex);
-            while (toy->current_capacity > toy->capacity) {
-                // Não posso iniciar o brinquedo com mais clientes do que ele suporta
-                toy->current_capacity--;
+            // pthread_mutex_lock(&toy->mutex);
+            toy->em_uso = 0;
+
+            if (toy->current_capacity == 0) {
+                sleep(tempo_espera_toy);
+            }
+
+            if(toy->current_capacity > toy->capacity) {
+                
+                pthread_mutex_lock(&toy->mutex);
+                toy->current_capacity = toy->capacity;
                 pthread_mutex_unlock(&toy->mutex);
             }
-            pthread_mutex_unlock(&toy->mutex);
-
+            
             if (toy->current_capacity <= toy->capacity && toy->current_capacity != 0) { // Se encheu o brinquedo, inicio ele
+                toy->em_uso = 1;
                 debug("[RUNNING] - O brinquedo [%d] está em funcionamento com [%d] passageiro(s).\n", toy->id, toy->current_capacity);
                 sleep(tempo_exec_toy); // Duração do brinquedo
                 debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
-            } else {
-                sleep(tempo_espera_toy);
             }
             for (int i = 0; i < toy->current_capacity; i++) {
                 sem_post(&toy->semaforo_toys);
             }
-            pthread_mutex_lock(&toy->mutex);
+            toy->em_uso = 0;
             toy->current_capacity = 0;
-            pthread_mutex_unlock(&toy->mutex);
-            
         }
         
         debug("[OFF] - O brinquedo [%d] foi desligado.\n", toy->id);

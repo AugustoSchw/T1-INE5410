@@ -31,7 +31,6 @@ int tempo_exec_toy = 2;         // Tempo de execução do brinquedo
 int tempo_espera_toy = 1;       // Tempo de espera para os clientes entrarem no brinquedo
 
 int tempo_ate_toy = 3;
-
 // Mutexes:
 
 pthread_mutex_t gate_mutex = PTHREAD_MUTEX_INITIALIZER;                     // Mutex para proteger as filas quando as funções enqueue e dequeue são executadas
@@ -42,11 +41,12 @@ pthread_mutex_t bilheteria_aberta_mutex = PTHREAD_MUTEX_INITIALIZER;        // M
 
 pthread_mutex_t sinalizador_close_gate_mutex = PTHREAD_MUTEX_INITIALIZER;   // Mutex para alteração da variavel sinalizador_close_gate
 
+
 // Semáforos:
 
 //sem_t semaforo_toys;            // Semáforo utilizado para informar todos os passageiros que o brinquedo foi finalizado
 
-// sem_t semaforo_clients;
+sem_t semaforo_clients;
 
 // Ponteiros e ponteiros de ponteiros:
 

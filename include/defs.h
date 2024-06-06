@@ -29,6 +29,7 @@ typedef struct toy{
   int id;                   // O id de um brinquedo.
   int capacity;             // A capacidade total de um brinquedo.
   int current_capacity;     // A lotação atual no brinquedo.
+  int em_uso;
   pthread_t thread;         // A thread de um brinquedo.
   pthread_mutex_t mutex;    // Mutex de cada brinquedo
   sem_t semaforo_toys;
@@ -41,6 +42,8 @@ typedef struct client{
   int number_toys;          // Numero de brinquedos disponiveis.
   toy_t **toys;             // (Copy) Array de brinquedos.
   int em_fila;              // Se o cliente está na fila da bilheteria.
+  sem_t semaforo, semaforo_antes_fila;
+  pthread_mutex_t mutex;
 } client_t;
 
 /* Adicione as estruturas de sincronização que achar necessárias */

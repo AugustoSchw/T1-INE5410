@@ -36,21 +36,25 @@ void *enjoy(void *arg){
         //pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);
         if(ar_toys[escolha_toy]->current_capacity >= ar_toys[escolha_toy]->capacity) {
             ar_clients[(cliente->id - 1)]-> coins += 1;
-            //pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
             debug("[INFO] O turista [%d] tentou entrar no brinquedo [%d] mas ja estava lotado!\n", cliente -> id, cliente->toys[escolha_toy]->id);
             continue;
         }
-        
-        debug("[INFO] O turista [%d] está no brinquedo [%d]\n", cliente -> id, cliente->toys[escolha_toy]->id);
-        pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);
-        ar_toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
-        pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
-        sem_wait(&ar_toys[escolha_toy]->semaforo_toys);
-        //sem_post(&semaforo_clients);
+        else if(ar_toys[escolha_toy]->em_uso == 1) {
+            ar_clients[(cliente->id - 1)]-> coins += 1;
+            //pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
+            debug("[INFO] O turista [%d] tentou entrar no brinquedo [%d] mas ja estava em funcionamento!\n", cliente -> id, cliente->toys[escolha_toy]->id);
+            continue;
+        } else{
+            debug("[INFO] O turista [%d] está no brinquedo [%d]\n", cliente -> id, cliente->toys[escolha_toy]->id);
+            pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);
+            ar_toys[escolha_toy]->current_capacity += 1;  // Incrementa a capacidade atual do brinquedo escolhido
+            pthread_mutex_unlock(&ar_toys[escolha_toy]->mutex);
+            sem_wait(&ar_toys[escolha_toy]->semaforo_toys);
+        }
         
     }
 
-    debug("[EXIT] - O turista saiu do parque.\n");
+    debug("[EXIT] - O turista [%d] saiu do parque.\n", cliente->id);
     pthread_exit(NULL);
 }
 
@@ -64,10 +68,12 @@ void buy_coins(client_t *self){
 // Função onde o cliente espera a liberacao da bilheteria para adentrar ao parque.
 void wait_ticket(client_t *self){
     // Sua lógica aqui
-    while (!bilheteria_aberta){ // Enquanto a bilheteria não estiver aberta, o cliente espera
+
+    if (!bilheteria_aberta) {
         debug(" Turista [%d] esperando a bilheteria abrir.\n", self->id);
-        sleep(tempo_espera_cliente);
+        sem_wait(&ar_clients[self->id - 1]->semaforo_antes_fila);
     }
+
     queue_enter(self);   // Entra na fila da bilheteria
 }
 
@@ -84,8 +90,8 @@ void queue_enter(client_t *self){
 
     ar_clients[self->id - 1]->em_fila = 1;    // Adiciona o cliente ao array de clientes
     
-    while ((ar_clients[self->id - 1]->em_fila) == 1){  // Enquanto o cliente estiver na fila, ele espera
-       sleep(1);
+    if ((ar_clients[self->id - 1]->em_fila) == 1){  // Enquanto o cliente estiver na fila, ele espera
+        sem_wait(&ar_clients[self->id - 1]->semaforo);
     }
 
     debug("[CASH] - Turista [%d] comprou [%d] moedas.\n", self->id, self->coins);
@@ -101,9 +107,12 @@ void open_gate(client_args *args){
     client_thread = (pthread_t *) malloc(n_clients * sizeof(pthread_t)); // Aloca memoria para a thread do cliente
     for (int i = 0; i < n_clients; i++) { // Inicializa os clientes
         ar_clients[i] = args->clients[i]; // Insere os argumentos no array de clientes
+        sem_init(&ar_clients[i]->semaforo, 0, 0); // Inicializa o semáforo do cliente
+        sem_init(&ar_clients[i]->semaforo_antes_fila, 0, 0); // Inicializa o semáforo do cliente antes da fila
         pthread_create(&client_thread[i], NULL, enjoy, (void *) ar_clients[i]); // Cria a thread do cliente
         
     }
+    
 }
 
 // Essa função deve finalizar os clientes

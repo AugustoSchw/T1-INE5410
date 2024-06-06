@@ -30,6 +30,7 @@ void *sell(void *args){
                 debug("Cliente [%d] atendido pelo funcionário [%d]\n", ar_clients[cliente_fila]->id, atendente->id); 
                 buy_coins(ar_clients[cliente_fila]); // Função que executa a compra de moedas
                 ar_clients[cliente_fila]->em_fila = 0; // Cliente não está mais na fila, pode entrar no parque
+                sem_post(&ar_clients[cliente_fila]->semaforo); // Libera o cliente para entrar no parque
             } else {
                 pthread_mutex_unlock(&gate_mutex); // Se a fila estiver vazia, libera o mutex
                 sleep(1);
@@ -52,6 +53,9 @@ void open_tickets(tickets_args *args){
     atendentes = (pthread_t *) malloc(args->n * sizeof(pthread_t));
     for (int i = 0; i < args->n; i++) {
         pthread_create(&atendentes[i], NULL, sell, (void *) args->tickets[i]);
+    }
+    for (int i = 0; i < n_clients; i++) {
+        sem_post(&ar_clients[i]->semaforo_antes_fila); // Libera os clientes para entrar na fila
     }
     pthread_mutex_lock(&bilheteria_aberta_mutex); // Garante atomicidade da variável global com o mutex
     bilheteria_aberta = 1; // Bilheteria aberta
