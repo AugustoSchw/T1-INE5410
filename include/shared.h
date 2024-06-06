@@ -21,7 +21,7 @@ extern int bilheteria_aberta;
 extern int tempo_espera_toy;
 extern int sinalizador_close_toy;
 extern int sinalizador_close_park;
-
+extern int tempo_ate_toy;
 extern ticket_t **ar_tickets;
 extern client_t **ar_clients;
 extern toy_t **ar_toys;

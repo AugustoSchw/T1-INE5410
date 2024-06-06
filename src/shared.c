@@ -30,6 +30,7 @@ int tempo_exec_toy = 2;         // Tempo de execução do brinquedo
 
 int tempo_espera_toy = 1;       // Tempo de espera para os clientes entrarem no brinquedo
 
+int tempo_ate_toy = 3;
 
 // Mutexes:
 

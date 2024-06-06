@@ -28,9 +28,9 @@ void *enjoy(void *arg){
         if (ar_clients[(cliente->id - 1)]->coins <= 0) {  // Se o cliente nao tiver mais moedas, sai do parque
             break;
         }
-        sleep(1);
+        sleep(1); 
         ar_clients[(cliente->id - 1)]->coins -= 1;   // Decrementa a quantidade de moedas do cliente por brinquedo usado
-        sleep(3);
+        sleep(tempo_ate_toy);
         debug("[INFO] O turista [%d] gastou uma moeda e está com [%d] moedas.\n", cliente->id, cliente->coins);
         int escolha_toy = rand() % cliente->number_toys; // Escolha aleatoria de brinquedos
         //pthread_mutex_lock(&ar_toys[escolha_toy]->mutex);

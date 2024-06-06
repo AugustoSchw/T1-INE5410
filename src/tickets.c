@@ -49,7 +49,6 @@ void open_tickets(tickets_args *args){
     // Sua lógica aqui
     ar_tickets = args -> tickets;
     n_tickets = args -> n;
-    //pthread_t *atendentes = (pthread_t *) malloc(n_tickets * sizeof(pthread_t));
     atendentes = (pthread_t *) malloc(args->n * sizeof(pthread_t));
     for (int i = 0; i < args->n; i++) {
         pthread_create(&atendentes[i], NULL, sell, (void *) args->tickets[i]);
