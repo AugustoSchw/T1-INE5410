@@ -13,10 +13,8 @@
     
     // Thread que o brinquedo vai usar durante toda a simulacao do sistema
     
-    
     void *turn_on(void *args) {
         toy_t *toy = (toy_t *)args;
-        sem_init(&semaforo_toys, 0, 0);
         debug("[ON] - O brinquedo [%d] foi ligado.\n", toy->id);
         while(!sinalizador_close_toy) {
         
@@ -34,20 +32,20 @@
                 debug("[RUNNING] - O brinquedo [%d] está em funcionamento com [%d] passageiro(s).\n", toy->id, toy->current_capacity);
                 sleep(tempo_exec_toy); // Duração do brinquedo
                 debug("[FINISHED] - O brinquedo [%d] terminou.\n", toy->id);
-                
             } else {
                 sleep(tempo_espera_toy);
-                
-                //debug("1239012830918301928310")
             }
             for (int i = 0; i < toy->current_capacity; i++) {
-                sem_post(&semaforo_toys);
+                sem_post(&toy->semaforo_toys);
             }
+            pthread_mutex_lock(&toy->mutex);
             toy->current_capacity = 0;
-
+            pthread_mutex_unlock(&toy->mutex);
+            
         }
         
         debug("[OFF] - O brinquedo [%d] foi desligado.\n", toy->id);
+        
         pthread_exit(NULL);
     }
 
@@ -63,13 +61,13 @@
         n_toys = args -> n;
         for (int i = 0; i < n_toys; i++) {  // Criação de cada brinquedo
             pthread_create(&args->toys[i]->thread, NULL, turn_on, (void *) ar_toys[i]);
+            sem_init(&ar_toys[i]->semaforo_toys, 0, 0);
         }
 
     }
 
     // Desligando os brinquedos
     void close_toys(){
-        // Sua lógica aqui
         for(int i = 0; i < n_toys; i ++) {
             pthread_join(ar_toys[i]->thread, NULL);
         }
