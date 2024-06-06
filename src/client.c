@@ -61,8 +61,8 @@ void *enjoy(void *arg){
 // Funcao onde o cliente compra as moedas para usar os brinquedos
 void buy_coins(client_t *self){
     // Sua lógica aqui
-    //ar_clients[self->id - 1]->coins = (rand() % MAX_COINS) + 1; // Cede um valor aleatório de moedas ao cliente
-    ar_clients[self->id - 1]->coins = 2;
+    ar_clients[self->id - 1]->coins = (rand() % MAX_COINS) + 1; // Cede um valor aleatório de moedas ao cliente
+    //ar_clients[self->id - 1]->coins = 2;
 }
 
 // Função onde o cliente espera a liberacao da bilheteria para adentrar ao parque.
